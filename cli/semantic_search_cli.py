@@ -6,6 +6,7 @@ from lib.semantic_search import (
     verify_model,
     embed_text,
     verify_embeddings,
+    embed_query_text,
 )
 
 def main():
@@ -23,6 +24,11 @@ def main():
 
     subparsers.add_parser('verify_embeddings', help='Verify the embeddings of movies.')
 
+    query_embed_parser = subparsers.add_parser('embedquery', help='Embeds the query passed.')
+    query_embed_parser.add_argument(
+        'query', type=str, help='Query to get embeddings for.'
+    )
+
     args = parser.parse_args()
 
     match args.command:
@@ -32,6 +38,8 @@ def main():
             embed_text(args.text)
         case 'verify_embeddings':
             verify_embeddings()
+        case 'embedquery':
+            embed_query_text(args.query)
         case _:
             parser.print_help()
 

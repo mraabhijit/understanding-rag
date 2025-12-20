@@ -35,7 +35,7 @@ class SemanticSearch:
 
         self.embeddings = self.model.encode(doc_strings, show_progress_bar=True)
         with open(self.embeddings_path, 'wb') as f:
-            np.save(self.embeddings, f)
+            np.save(f, self.embeddings)
 
         return self.embeddings
     
@@ -44,7 +44,7 @@ class SemanticSearch:
         for doc in documents:
             self.document_map[doc['id']] = doc
 
-        if os.path.exists(self.embeddings_path):
+        if os.path.exists(self.embeddings_path) and os.path.getsize(self.embeddings_path) > 0:
             self.embeddings = np.load(self.embeddings_path)
             if len(self.embeddings) == len(documents):
                 return self.embeddings
@@ -73,3 +73,12 @@ def verify_embeddings():
     embeddings = sem.load_or_create_embeddings(documents)
     print(f"Number of docs:   {len(documents)}")
     print(f"Embeddings shape: {embeddings.shape[0]} vectors in {embeddings.shape[1]} dimensions")
+
+
+def embed_query_text(query: str):
+    sem = SemanticSearch()
+    embedding = sem.generate_embedding(query)
+    print(f"Query: {query}")
+    print(f"First 5 dimensions: {embedding[:5]}")
+    print(f"Shape: {embedding.shape}")
+
