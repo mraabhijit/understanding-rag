@@ -4,6 +4,7 @@ from typing import Any
 
 DEFAULT_SEARCH_LIMIT = 3
 SCORE_PRECISION = 3
+DEFAULT_DESCRIPTION_LIMT = 100
 
 BM25_K1 = 1.5
 BM25_B = 0.75
@@ -45,6 +46,28 @@ def format_search_result(
         "id": doc_id,
         "title": title,
         "document": document,
+        "score": round(score, SCORE_PRECISION),
+        "metadata": metadata if metadata else {},
+    }
+
+
+def format_similarity_result(
+    document: str, score: float, **metadata: Any
+) -> dict[str, Any]:
+    """Create standardized search result
+
+    Args:
+        document: Document dictionary
+        score: Relevance/similarity score
+        **metadata: Additional metadata to include
+
+    Returns:
+        Dictionary representation of search result
+    """
+    return {
+        "id": document['id'],
+        "title": document['title'],
+        "description": document['description'][:DEFAULT_DESCRIPTION_LIMT],
         "score": round(score, SCORE_PRECISION),
         "metadata": metadata if metadata else {},
     }
