@@ -1,0 +1,23 @@
+[project]
+name = "rag"
+version = "1.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "nltk==3.9.2",
+    "numpy==2.3.4",
+    "sentence-transformers==5.2.0",
+    "torch==2.7.1",
+    "torchviz==0.0.3",
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu118" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true
