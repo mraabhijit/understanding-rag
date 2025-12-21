@@ -17,25 +17,25 @@ def main():
         'scores', type=float, nargs='+', help='list of scores to normalize'
     )
 
-    weighted_search = subparsers.add_parser('weighted_search', help='Weighted search')
-    weighted_search.add_argument(
+    weighted_parser = subparsers.add_parser('weighted_search', help='Weighted search')
+    weighted_parser.add_argument(
         'query', type=str, help='query to search'
     )
-    weighted_search.add_argument(
+    weighted_parser.add_argument(
         '--alpha', type=float, help='alpha value for weighted search', default=0.5
     )
-    weighted_search.add_argument(
+    weighted_parser.add_argument(
         '--limit', type=int, help='limit for weighted search', default=5
     )
 
-    rrf_search = subparsers.add_parser('rrf-search', help='RRF search')
-    rrf_search.add_argument(
+    rrf_parser = subparsers.add_parser('rrf-search', help='RRF search')
+    rrf_parser.add_argument(
         'query', type=str, help='query to search'
     )
-    rrf_search.add_argument(
+    rrf_parser.add_argument(
         '--k', type=int, help='k value for rrf search', default=60
     )
-    rrf_search.add_argument(
+    rrf_parser.add_argument(
         '--limit', type=int, help='limit for rrf search', default=5
     )
 
