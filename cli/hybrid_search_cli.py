@@ -38,6 +38,12 @@ def main():
     rrf_parser.add_argument(
         '--limit', type=int, help='limit for rrf search', default=5
     )
+    rrf_parser.add_argument(
+        "--enhance",
+        type=str,
+        choices=["spell", "rewrite", "expand"],
+        help="Query enhancement method",
+    )
 
     args = parser.parse_args()
 
@@ -56,7 +62,7 @@ def main():
                 print(f"   BM25: {score_info['keyword_score']:.4f}, Semantic: {score_info['semantic_score']:.4f}")
                 print(f"   {score_info['document'][:100]}...") 
         case 'rrf-search':
-            results = rrf_search_command(args.query, args.k, args.limit)
+            results = rrf_search_command(args.query, args.k, args.limit, args.enhance)
             for i, score_info in enumerate(results):
                 print(f"{i+1}. {score_info['title']}")
                 print(f"   RRF Score: {score_info['rrf_score']:.4f}")

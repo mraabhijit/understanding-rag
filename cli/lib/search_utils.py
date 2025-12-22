@@ -1,6 +1,12 @@
 import json
 import os
+import sys
 from typing import Any
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+import config
+from cli.lib.gemini import client
 
 DEFAULT_SEARCH_LIMIT = 3
 SCORE_PRECISION = 3
@@ -139,3 +145,17 @@ def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
         return dot_product / (eucleadian_norm(vec1) * eucleadian_norm(vec2))
     except ZeroDivisionError:
         return 0.0
+
+def enhance_query(query: str, enhancement: str) -> str:
+    if enhancement == 'spell':
+        contents = config.SPELL_CHECKER_PROMPT.format(query=query)
+    elif enhancement == 'rewrite':
+        contents = config.REWRITER_PROMPT.format(query=query)
+    elif enhancement == 'expand':
+        contents = config.EXPAND_PROMPT.format(query=query)
+
+    response = client.models.generate_content(
+        model=config.MODEL_NAME,
+        contents=contents
+    )
+    return response.text
