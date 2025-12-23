@@ -5,6 +5,7 @@ from .semantic_search import ChunkedSemanticSearch
 from lib.search_utils import (
     load_movies,
     enhance_query,
+    rerank_result,
 )
 
 class HybridSearch:
@@ -128,4 +129,11 @@ def rrf_search_command(query: str, k: int = 60, limit: int = 10, enhance: str = 
         query = enhance_query(query, enhance)
         print(f"Enhanced query ({enhance}): '{original_query}' -> '{query}'\n")
     results = hybrid.rrf_search(query, k, limit)
-    return results
+
+    for i, doc in enumerate(results):
+        rerank_score = rerank_result(query, doc)
+        results[i]['rerank_score'] = rerank_score
+
+    sorted_results = sorted(results, key=lambda x: x['rerank_score'], reverse=True)
+
+    return sorted_results

@@ -177,7 +177,7 @@ class ChunkedSemanticSearch(SemanticSearch):
             results.append({
                 'id': doc['id'],
                 'title': doc['title'],
-                'document': doc['description'][:100],
+                'document': doc['description'],
                 'score': round(info['score'], SCORE_PRECISION),
                 'metadata': chunk_meta if chunk_meta is not None else {}
             })

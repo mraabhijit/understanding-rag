@@ -8,7 +8,7 @@ Query: "{query}"
 If no errors, return the original query.
 Corrected:"""
 
-MODEL_NAME = 'gemini-2.5-flash-lite'
+MODEL_NAME = 'gemini-2.5-flash'
 
 REWRITER_PROMPT = """Rewrite this movie search query to be more specific and searchable.
 
@@ -44,3 +44,19 @@ Examples:
 
 Query: "{query}"
 Expanded query:"""
+
+
+INDIVIDUAL_RERANK_PROMPT = """Rate how well this movie matches the search query.
+
+Query: "{query}"
+Movie: "{doc_title}" - "{doc_document}"
+
+Consider:
+- Direct relevance to query
+- User intent (what they're looking for)
+- Content appropriateness
+
+Rate 0-10 (10 = perfect match).
+Give me ONLY the number in your response, no other text or explanation.
+
+Score:"""

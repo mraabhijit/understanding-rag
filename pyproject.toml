@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "google-api-core>=2.28.1",
     "google-genai>=1.56.0",
     "nltk==3.9.2",
     "numpy==2.3.4",

@@ -1,12 +1,15 @@
 import json
 import os
 import sys
+import time
 from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 import config
 from cli.lib.gemini import client
+
+from google.api_core import exceptions
 
 DEFAULT_SEARCH_LIMIT = 3
 SCORE_PRECISION = 3
@@ -159,3 +162,22 @@ def enhance_query(query: str, enhancement: str) -> str:
         contents=contents
     )
     return response.text
+
+
+def rerank_result(query: str, doc: dict, delay: float = 0.5, retries: int = 5) -> float:
+    doc_title = doc.get('title', '')
+    doc_document = doc.get('document', '')
+    contents = config.INDIVIDUAL_RERANK_PROMPT.format(
+        query=query, doc_title=doc_title, doc_document=doc_document
+    )
+    for _ in range(retries):
+        try:
+            response = client.models.generate_content(
+                model=config.MODEL_NAME,
+                contents=contents,
+            )
+            return response.text
+        except exceptions.ResourceExhausted:
+            time.sleep(delay)
+            delay *= 2
+    raise Exception('Failed to generate response after multiple retries due to rate limits.')
