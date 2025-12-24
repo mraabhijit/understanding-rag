@@ -25,6 +25,7 @@ BM25_B = 0.75
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 DATA_PATH = os.path.join(PROJECT_ROOT, "data", "movies.json")
 STOPWORDS_PATH = os.path.join(PROJECT_ROOT, "data", "stopwords.txt")
+GOLDEN_DATASET_PATH = os.path.join(PROJECT_ROOT, "data", "golden_dataset.json")
 
 CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
 
@@ -197,3 +198,24 @@ def rerank_batch(query: str, doc_list: list) -> dict:
         contents=contents,
     )
     return response.text
+
+
+def load_golden_data() -> dict:
+    with open(GOLDEN_DATASET_PATH, 'r') as f:
+        data = json.load(f)
+    return data['test_cases']
+
+
+def llm_evaluate(query: str, results: list[dict]) -> dict:
+    docs = [f"{doc['title']} - {doc['document']}" for doc in results]
+    contents = config.EVALUATION_PROMPT.format(
+        query=query,
+        results=docs,
+    )
+
+    response = client.models.generate_content(
+        model=config.MODEL_NAME,
+        contents=contents,
+    )
+    return response.text
+

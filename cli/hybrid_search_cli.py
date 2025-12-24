@@ -50,6 +50,12 @@ def main():
         choices=['individual', 'batch', 'cross_encoder'],
         help="Rerank documents based on provided choice",
     )
+    rrf_parser.add_argument(
+        "--evaluate",
+        type=bool,
+        default=False,
+        help="Evaluate response by LLM",
+    )
 
     args = parser.parse_args()
 
@@ -73,7 +79,14 @@ def main():
                 limit = args.limit * 5
                 print(f"Reranking top {limit} results using {args.rerank_method} method...")
             
-            results = rrf_search_command(args.query, args.k, limit, args.enhance, args.rerank_method)
+            results = rrf_search_command(
+                query=args.query,
+                k=args.k,
+                limit=limit,
+                enhance=args.enhance,
+                rerank_method=args.rerank_method,
+                evaluate=args.evaluate,
+            )
             print(f"\n\nReciprocal Rank Fusion Results for '{args.query}' (k={args.k}):")
 
             for i, score_info in enumerate(results[:args.limit]):
@@ -88,7 +101,7 @@ def main():
 
                 print(f"   RRF Score: {score_info['rrf_score']:.3f}")
                 print(f"   BM25 Rank: {score_info['bm25_rank']}, Semantic Rank: {score_info['semantic_rank']}")
-                print(f"   {score_info['document'][:100]}...\n") 
+                print(f"   {score_info['document'][:100]}...\n")
         case _:
             parser.print_help()
 

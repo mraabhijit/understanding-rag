@@ -7,7 +7,8 @@ from lib.search_utils import (
     load_movies,
     enhance_query,
     rerank_individual,
-    rerank_batch
+    rerank_batch,
+    llm_evaluate,
 )
 
 from sentence_transformers import CrossEncoder
@@ -126,7 +127,8 @@ def weighted_search_command(query: str, alpha: float = 0.5, limit: int = 5):
 def rrf_score(rank, k=60):
     return 1 / (k + rank)
 
-def rrf_search_command(query: str, k: int = 60, limit: int = 10, enhance: str = None, rerank_method: str = None):
+def rrf_search_command(query: str, k: int = 60, limit: int = 10, enhance: str = None, rerank_method: str = None, evaluate: bool = False):
+    print(f"Original query: {query}")
     documents = load_movies()
     hybrid = HybridSearch(documents)
     if enhance is not None:
@@ -134,6 +136,11 @@ def rrf_search_command(query: str, k: int = 60, limit: int = 10, enhance: str = 
         query = enhance_query(query, enhance)
         print(f"Enhanced query ({enhance}): '{original_query}' -> '{query}'\n")
     results = hybrid.rrf_search(query, k, limit)
+
+    if evaluate:
+        llm_ranks = json.loads(llm_evaluate(query, results))
+        for i, (rank, doc) in enumerate(zip(llm_ranks, results)):
+            print(f"{i+1}. {doc['title']}: {rank}/3")
 
     if not rerank_method:
         return results
