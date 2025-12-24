@@ -7,7 +7,7 @@ from typing import Any
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 import config
-from cli.lib.gemini import client
+from lib.gemini import client
 
 from google.api_core import exceptions
 
