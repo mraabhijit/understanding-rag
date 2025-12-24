@@ -1,3 +1,6 @@
+MODEL_NAME = 'gemini-2.5-flash-lite'
+
+
 SPELL_CHECKER_PROMPT = """
 Fix any spelling errors in this movie search query.
 
@@ -8,7 +11,6 @@ Query: "{query}"
 If no errors, return the original query.
 Corrected:"""
 
-MODEL_NAME = 'gemini-2.5-flash'
 
 REWRITER_PROMPT = """Rewrite this movie search query to be more specific and searchable.
 
@@ -60,3 +62,17 @@ Rate 0-10 (10 = perfect match).
 Give me ONLY the number in your response, no other text or explanation.
 
 Score:"""
+
+
+BATCH_RERANK_PROMPT = """Rank these movies by relevance to the search query.
+
+Query: "{query}"
+
+Movies:
+{doc_list_str}
+
+Return ONLY the IDs in order of relevance (best match first). 
+Return a valid JSON list, nothing else. For example:
+
+[75, 12, 34, 2, 1]
+"""

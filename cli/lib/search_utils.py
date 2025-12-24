@@ -164,7 +164,7 @@ def enhance_query(query: str, enhancement: str) -> str:
     return response.text
 
 
-def rerank_result(query: str, doc: dict, delay: float = 0.5, retries: int = 5) -> float:
+def rerank_individual(query: str, doc: dict, delay: float = 0.5, retries: int = 5) -> float:
     doc_title = doc.get('title', '')
     doc_document = doc.get('document', '')
     contents = config.INDIVIDUAL_RERANK_PROMPT.format(
@@ -181,3 +181,19 @@ def rerank_result(query: str, doc: dict, delay: float = 0.5, retries: int = 5) -
             time.sleep(delay)
             delay *= 2
     raise Exception('Failed to generate response after multiple retries due to rate limits.')
+
+
+def rerank_batch(query: str, doc_list: list) -> dict:
+    # Format the document list as a list of strings
+    doc_list_str = [f"ID: {doc['id']}, Title: {doc['title']}, Document: {doc['document']}" for doc in doc_list]
+    
+    contents = config.BATCH_RERANK_PROMPT.format(
+        query=query,
+        doc_list_str=doc_list_str,
+    )
+
+    response = client.models.generate_content(
+        model=config.MODEL_NAME,
+        contents=contents,
+    )
+    return response.text

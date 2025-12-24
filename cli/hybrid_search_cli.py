@@ -47,7 +47,7 @@ def main():
     rrf_parser.add_argument(
         "--rerank-method",
         type=str,
-        choices=['individual',],
+        choices=['individual', 'batch', 'cross_encoder'],
         help="Rerank documents based on provided choice",
     )
 
@@ -68,16 +68,27 @@ def main():
                 print(f"   BM25: {score_info['keyword_score']:.4f}, Semantic: {score_info['semantic_score']:.4f}")
                 print(f"   {score_info['document'][:100]}...") 
         case 'rrf-search':
-            limit = original_limit = args.limit
-            if args.rerank_method == 'individual':
+            limit = args.limit
+            if args.rerank_method in ['individual', 'batch', 'cross_encoder']:
                 limit = args.limit * 5
-            results = rrf_search_command(args.query, args.k, limit, args.enhance)
-            for i, score_info in enumerate(results[:original_limit]):
+                print(f"Reranking top {limit} results using {args.rerank_method} method...")
+            
+            results = rrf_search_command(args.query, args.k, limit, args.enhance, args.rerank_method)
+            print(f"\n\nReciprocal Rank Fusion Results for '{args.query}' (k={args.k}):")
+
+            for i, score_info in enumerate(results[:args.limit]):
                 print(f"{i+1}. {score_info['title']}")
-                print(f"   Rerank Score: {score_info['rerank_score']:.3f}/10")
+
+                if args.rerank_method == 'individual':
+                    print(f"   Rerank score: {score_info['rerank_score']:.3f}/10")
+                elif args.rerank_method == 'batch':
+                    print(f"   Rerank Rank: {score_info['rerank_rank']}")
+                elif args.rerank_method == 'cross_encoder':
+                    print(f"   Cross Encoder Score: {score_info['cross_encoder_score']:.3f}")
+
                 print(f"   RRF Score: {score_info['rrf_score']:.3f}")
                 print(f"   BM25 Rank: {score_info['bm25_rank']}, Semantic Rank: {score_info['semantic_rank']}")
-                print(f"   {score_info['document'][:100]}...") 
+                print(f"   {score_info['document'][:100]}...\n") 
         case _:
             parser.print_help()
 
